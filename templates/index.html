@@ -1,0 +1,20 @@
+
+{% extends "bootstrap/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% include "menu.html" %}
+
+{% block content %}
+<div class="container  bg-info text-info">
+    <div class="page-header">
+        <h1> {% if name %}  {{ name | capitalize }}, let's run this bike together  {% else %}Wow, another Stranger here?{% endif %}!</h1>
+    </div>
+    {{date1}}
+    <img src="/static/sc.jpg" class="rounded img-thumbnail float-end"/>
+
+{% block page_content %}
+<div class="col  bg-light p-3 border">
+    {{ wtf.quick_form(form) }}
+</div>
+{% endblock %}
+</div>
+{% endblock %}

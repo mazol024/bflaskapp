@@ -1,0 +1,30 @@
+{% extends "bootstrap/base.html" %}
+{% block head %}
+    {{ super() }}
+    <style>
+      html, body  {
+        height: 100%;
+        width: 100%;
+     }
+    </style>
+{% endblock %}
+{% block body %}    
+  <div id="footballgame">
+    {% block scripts %}
+    {{ super() }}
+    <script src="//cdn.jsdelivr.net/npm/phaser@3.24.0/dist/phaser.min.js"></script>
+    <script>
+      var prevScrollpos = window.pageYOffset;
+      window.onscroll = function() {
+      var currentScrollPos = window.pageYOffset;
+      if (prevScrollpos > currentScrollPos) {
+      document.getElementById("navbar").style.top = "0";
+      } else {
+      document.getElementById("navbar").style.top = "-50px";
+      }
+      prevScrollpos = currentScrollPos;
+    </script>
+      <script src="/static/isabel/g01.js"></script>
+    {% endblock %}
+    </div>
+{% endblock %}

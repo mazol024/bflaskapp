@@ -1,0 +1,11 @@
+
+{% extends "bootstrap/base.html" %}
+{% block content %}
+    {% for pic in photos %}
+    <div class="panel-primary ">
+        <div class="container bg-info text-info ">
+            <img src={{pic}} class="img-thumbnail rounded" alt="...">
+        </div>
+    </div>
+    {% endfor %}
+{% endblock %}
