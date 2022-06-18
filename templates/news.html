@@ -3,4 +3,18 @@
 {% block title %}OlegMazhanov{% endblock %}
 {% include  "menu.html" %}
 
-{% include "templ.html"%}
+{% block content %}
+    <div class="panel-primary ">
+
+            <div class="alert alert-warning" role="alert">
+                {% for item in articles %}
+                    <h3>{{ item['title'] }}</h3>
+                    <p>{{ item['abstract'] }} </p>
+                    <img src={{item['multimedia'][0]['url']}} class="img-thumbnail rounded" alt="..." />
+                    <a href={{item['url']}} >  Read full article...</a>
+                {% endfor %}
+                <hr/>
+            </div>
+
+    </div>
+{% endblock %}

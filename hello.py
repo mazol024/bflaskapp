@@ -8,6 +8,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
 import glob
+import requests
 
 application = Flask(__name__)
 application.config['SECRET_KEY'] = 'Hard to guess string'
@@ -28,14 +29,18 @@ def index():
     return render_template('index.html', name=name, form=form, salute='Hello world!', date1=formatted_now)
 
 
-@application.route('/home')
+@application.route('/anekdots')
 def home(who=' Anekdots'):
-    return render_template('home.html', name=who,  salute='Hello world!')
+    return render_template('anekdots.html', name=who,  salute='Hello world!')
 
 
 @application.route('/news')
-def news(who='Breaking News'):
-    return render_template('news.html', name=who,  salute='Hello world!')
+def news():
+    myurl = 'https://api.nytimes.com/svc/topstories/v2/world.json?api-key=qJzDA9Vq5xVrVG6wA7ALvNhd0AexMdv9'
+    obj1 = requests.get(myurl)
+    news =  obj1.json()
+    articles = news['results']
+    return render_template('news.html', articles=articles[1:],  salute='Hello world!')
 
 
 @application.route('/game1')
