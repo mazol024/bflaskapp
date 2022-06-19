@@ -1,0 +1,36 @@
+
+{% extends "bootstrap/base.html" %}
+{% block title %}OlegMazhanov{% endblock %}
+{% include  "menu.html" %}
+
+{% block content %}
+        <div class="panel panel-default">
+            <!-- Default panel contents -->
+            <div class="panel-heading">Panel heading</div>
+            <div class="panel-body">
+                <p>The weather 12 hours forecast for Dunedin, Otago.</p>
+            </div>
+
+            <!-- Table -->
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Day Time</th>
+                        <th>Temperature</th>
+                        <th>Weather Phrase</th>
+                    </tr>
+                </thead>
+                    <tbody>
+
+                        {% for item in weatherdata %}
+                        <tr>
+                            <td>{{ item['DateTime'][11:16] }}</td>
+                            <td>{{ item['Temperature']['Value'] }} Celsius </td>
+                            <td> {{ item['IconPhrase']}} </td>
+                        </tr>
+                            {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+{% endblock %}

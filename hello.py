@@ -33,6 +33,16 @@ def index():
 def home(who=' Anekdots'):
     return render_template('anekdots.html', name=who,  salute='Hello world!')
 
+@application.route('/weather')
+def weather():
+    #code = requests.get('http://dataservice.accuweather.com/locations/v1/cities/search?apikey=BIilFHGmyYwCasU6E1me1RBkj3MNdNfN&q=Dunedin')
+    code = '255042'
+    myurl ='http://dataservice.accuweather.com/forecasts/v1/hourly/12hour/'+ code + '?apikey=BIilFHGmyYwCasU6E1me1RBkj3MNdNfN&metric=true'
+    data0 = requests.get(myurl)
+    data1 = data0.json()
+    print(data1)
+    return render_template('weather.html', weatherdata=data1,  salute='Hello world!')
+
 
 @application.route('/news')
 def news():
