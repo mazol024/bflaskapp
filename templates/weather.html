@@ -4,14 +4,13 @@
 {% include  "menu.html" %}
 
 {% block content %}
-        <div class="panel panel-default">
-            <!-- Default panel contents -->
-            <div class="panel-heading">Panel heading</div>
-            <div class="panel-body">
-                <p>The weather 12 hours forecast for Dunedin, Otago.</p>
-            </div>
+<div class="panel-primary">
+    <!-- Default panel contents -->
 
-            <!-- Table -->
+    <div class="container panel-heading">Dunedin, New Zealand</div>
+    <div class="container bg-info text-info ">
+        <p>12 hours forecast</p>
+                <!-- Table -->
             <table class="table">
                 <thead>
                     <tr>
@@ -20,17 +19,18 @@
                         <th>Weather Phrase</th>
                     </tr>
                 </thead>
-                    <tbody>
+                <tbody>
 
-                        {% for item in weatherdata %}
+                    {% for item in weatherdata %}
                         <tr>
                             <td>{{ item['DateTime'][11:16] }}</td>
                             <td>{{ item['Temperature']['Value'] }} Celsius </td>
                             <td> {{ item['IconPhrase']}} </td>
                         </tr>
-                            {% endfor %}
+                        {% endfor %}
                     </tbody>
                 </table>
+            </div>
             </div>
         </div>
 {% endblock %}

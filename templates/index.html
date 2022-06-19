@@ -4,17 +4,47 @@
 {% include "menu.html" %}
 
 {% block content %}
-<div class="container  bg-info text-info">
-    <div class="page-header">
-        <h1> {% if name %}  {{ name | capitalize }}, let's run this bike together  {% else %}Wow, another Stranger here?{% endif %}!</h1>
-    </div>
-    {{date1}}
-    <img src="/static/sc.jpg" class="rounded img-thumbnail float-end"/>
-
-{% block page_content %}
-<div class="col  bg-light p-3 border">
-    {{ wtf.quick_form(form) }}
-</div>
-{% endblock %}
+<hr />
+<div class="container" style="text-align: left;">
+  <img
+    width="256"
+    alt="Flask Logo"
+    src={{"/static/pocoo_flask-official.svg"}}
+  />
+  <table style="padding: 20px; margin: 20px;">
+    <tr style="padding: 20px; margin: 20px;">
+      <td style="width: 15%;">
+        <h4>
+          Contact:
+        </h4>
+      </td>
+      <td style="width: 65%;">
+        <h4>
+          <a
+            target="_blank"
+            rel="noopener"
+            href="https://www.linkedin.com/in/olegmazhanov/"
+            >Linkdin profile
+          </a>
+        </h4>
+      </td>
+    </tr>
+    <tr>
+      <td style="width: 15%;">
+        <h4>Platform:</h4>
+      </td>
+      <td style="width: 65%;">
+        <h4>
+          <a target="_blank" rel="noopener" href="https://flask.palletsprojects.com/en/2.1.x/#"
+            >Flask framework. Learn more about it.</a
+          >
+        </h4>
+      </td>
+    </tr>
+  </table>
+  <hr />
+  <p class="footermain">
+    © Oleg Mazhanov 2022.
+  </p>
 </div>
 {% endblock %}

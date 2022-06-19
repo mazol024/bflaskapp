@@ -4,17 +4,15 @@
 {% include  "menu.html" %}
 
 {% block content %}
-    <div class="panel-primary ">
-
-            <div class="alert alert-warning" role="alert">
+   <div class="panel-primary ">
+        <div class="container bg-info text-info ">
                 {% for item in articles %}
                     <h3>{{ item['title'] }}</h3>
                     <p>{{ item['abstract'] }} </p>
                     <img src={{item['multimedia'][0]['url']}} class="img-thumbnail rounded" alt="..." />
                     <a href={{item['url']}} >  Read full article...</a>
+                    <hr style="height:2px;border-width:0;color:gray;background-color:gray">
                 {% endfor %}
-                <hr/>
-            </div>
-
+        </div>
     </div>
 {% endblock %}
