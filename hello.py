@@ -9,6 +9,7 @@ from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
 import glob
 import requests
+import os.path
 
 application = Flask(__name__)
 application.config['SECRET_KEY'] = 'Hard to guess string'
@@ -33,11 +34,13 @@ def index():
 def home(who=' Anekdots'):
     return render_template('anekdots.html', name=who,  salute='Hello world!')
 
+
 @application.route('/weather')
 def weather():
     #code = requests.get('http://dataservice.accuweather.com/locations/v1/cities/search?apikey=BIilFHGmyYwCasU6E1me1RBkj3MNdNfN&q=Dunedin')
     code = '255042'
-    myurl ='http://dataservice.accuweather.com/forecasts/v1/hourly/12hour/'+ code + '?apikey=BIilFHGmyYwCasU6E1me1RBkj3MNdNfN&metric=true'
+    myurl = 'http://dataservice.accuweather.com/forecasts/v1/hourly/12hour/' + \
+        code + '?apikey=BIilFHGmyYwCasU6E1me1RBkj3MNdNfN&metric=true'
     data0 = requests.get(myurl)
     data1 = data0.json()
     print(data1)
@@ -48,7 +51,7 @@ def weather():
 def news():
     myurl = 'https://api.nytimes.com/svc/topstories/v2/world.json?api-key=qJzDA9Vq5xVrVG6wA7ALvNhd0AexMdv9'
     obj1 = requests.get(myurl)
-    news =  obj1.json()
+    news = obj1.json()
     articles = news['results']
     return render_template('news.html', articles=articles[1:],  salute='Hello world!')
 
@@ -56,6 +59,12 @@ def news():
 @application.route('/game1')
 def games(who=' Project'):
     return render_template('games.html', name=who)
+
+
+@application.route('/photofull/<path:imagepath>')
+def photofull(imagepath):
+    p1 = os.path.join("/", imagepath)
+    return render_template('photofull.html', pic=p1)
 
 
 @application.route('/budapest')
