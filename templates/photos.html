@@ -1,11 +1,18 @@
 
 {% extends "bootstrap/base.html" %}
 {% block content %}
-    {% for pic in photos %}
-    <div class="panel-primary ">
-        <div class="container bg-info text-info ">
-            <img src={{pic}} class="img-thumbnail rounded" alt="...">
+<div class="panel-primary ">
+    <div class="container bg-info text-info ">
+        <div class="row">
+                {% for pic in photos %}
+                <div class="col-xs-6 col-md-3">
+                    <a href="#" class="thumbnail">
+                <img src={{pic}} alt="..."  style="height: 180px; width: 100%; display: block;">
+                    </a>
+                </div>
+                {% endfor %}
         </div>
     </div>
-    {% endfor %}
+</div>
 {% endblock %}
+
