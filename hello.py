@@ -64,8 +64,9 @@ def games(who=' Project'):
 
 @application.route('/photofull/<path:imagepath>')
 def photofull(imagepath):
-    p1 = os.path.normpath(os.path.join('./', imagepath))
-    print("Full picture " + p1)
+    p1 = imagepath[imagepath.rfind('/static'):]
+    #p1 = os.path.normpath(os.path.join('./', imagepath))
+    print("Full picture: " + p1)
     return render_template('photofull.html', pic1=p1)
 
 
@@ -109,9 +110,8 @@ def getpics(picsdir):
         files.append(os.path.normpath(f))
     createthumb(files)
     for i in files:
-        imgfiles.append([i, os.path.normpath(os.path.join('./static', i))])
-
-        print()
+        imgfiles.append( os.path.normpath(os.path.join('./static', i)))
+        print(imgfiles)
     return imgfiles
 
 
