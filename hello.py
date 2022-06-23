@@ -64,8 +64,9 @@ def games(who=' Project'):
 
 @application.route('/photofull/<path:imagepath>')
 def photofull(imagepath):
-    p1 = os.path.join("/", imagepath)
-    return render_template('photofull.html', pic=p1)
+    p1 = os.path.normpath(os.path.join('./', imagepath))
+    print("Full picture " + p1)
+    return render_template('photofull.html', pic1=p1)
 
 
 @application.route('/budapest')
@@ -102,23 +103,27 @@ def lolpics(descript='Funny pictures from fishki.net'):
 
 def getpics(picsdir):
     files = []
+    imgfiles = []
     for f in glob.glob(picsdir):
         #files.append('/' + f)
         files.append(os.path.normpath(f))
-        print('your file: ' + os.path.normpath(f))
     createthumb(files)
-    return files
+    for i in files:
+        imgfiles.append([i, os.path.normpath(os.path.join('./static', i))])
+
+        print()
+    return imgfiles
 
 
 def createthumb(ofiles):
     if not os.path.exists(os.path.normpath('./static/static')):
         os.makedirs(os.path.normpath('./static/static'))
     for f in ofiles:
-        if os.path.isfile(os.path.join('/static', f)):
+        if os.path.isfile(os.path.join('./static', f)):
             continue
         else:
             img = Image.open(f)
-            img = img.resize((200, 200), Image.ANTIALIAS)
+            img = img.resize((180, 180), Image.ANTIALIAS)
             img.save(os.path.join('./static', f), 'JPEG', quality=90)
 
 
