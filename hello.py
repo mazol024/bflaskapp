@@ -51,7 +51,7 @@ def weather():
 @application.route('/news')
 def news():
     #myurl = 'https://api.nytimes.com/svc/topstories/v2/world.json?api-key=qJzDA9Vq5xVrVG6wA7ALvNhd0AexMdv9'
-    myurl = 'https://newsapi.org/v2/everything?q=apple&from=2022-06-22&to=2022-06-22&sortBy=popularity&apiKey=2f388081dd7f45d78d8ff8f36dd0b29c'
+    myurl = 'https://newsapi.org/v2/top-headlines?country=us&category=business&apiKey=2f388081dd7f45d78d8ff8f36dd0b29c'
     obj1 = requests.get(myurl)
     news = obj1.json()
     #articles = news['results']
