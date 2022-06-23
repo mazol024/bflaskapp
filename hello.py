@@ -10,6 +10,7 @@ from wtforms.validators import DataRequired
 import glob
 import requests
 import os.path
+from PIL import Image
 
 application = Flask(__name__)
 application.config['SECRET_KEY'] = 'Hard to guess string'
@@ -102,8 +103,23 @@ def lolpics(descript='Funny pictures from fishki.net'):
 def getpics(picsdir):
     files = []
     for f in glob.glob(picsdir):
-        files.append('\\' + f)
+        #files.append('/' + f)
+        files.append(os.path.normpath(f))
+        print('your file: ' + os.path.normpath(f))
+    createthumb(files)
     return files
+
+
+def createthumb(ofiles):
+    if not os.path.exists(os.path.normpath('./static/static')):
+        os.makedirs(os.path.normpath('./static/static'))
+    for f in ofiles:
+        if os.path.isfile(os.path.join('/static', f)):
+            continue
+        else:
+            img = Image.open(f)
+            img = img.resize((200, 200), Image.ANTIALIAS)
+            img.save(os.path.join('./static', f), 'JPEG', quality=90)
 
 
 if __name__ == "__main__":
