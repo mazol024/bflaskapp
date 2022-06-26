@@ -7,6 +7,13 @@ from frm1 import NameForm
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
+
+from urllib.request import urlopen
+from bs4 import BeautifulSoup
+import ssl
+import certifi
+from urllib.request import urlopen
+
 import glob
 import requests
 import os.path
@@ -33,9 +40,24 @@ def index():
 
 @application.route('/anekdots')
 def home(who=' Anekdots'):
-    return render_template('anekdots.html', name=who,  salute='Hello world!')
-
-
+    #return render_template('anekdots.html', name=who,  salute='Hello world!')
+    url = 'https://www.anekdot.ru/random/anekdot/'
+    html = urlopen(url, context=ssl.create_default_context(cafile=certifi.where()))
+    soup = BeautifulSoup(html, "html.parser")
+    tags = soup('div')
+    text = []
+    f = True
+    for tag in tags:
+        if tag.attrs == {'class': ['text']}:
+            l = tag.contents
+            for a in l:
+                if str(a).startswith('<br'):
+                    continue
+                text.append(a)
+            if text[:-1] != '*next':
+                text.append('*next')
+    return  render_template('home.html', text=text)
+    
 @application.route('/weather')
 def weather():
     #code = requests.get('http://dataservice.accuweather.com/locations/v1/cities/search?apikey=BIilFHGmyYwCasU6E1me1RBkj3MNdNfN&q=Dunedin')
