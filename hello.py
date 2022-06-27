@@ -20,6 +20,7 @@ import requests
 import os.path
 from PIL import Image
 import translators as ts
+import asyncio
 
 application = Flask(__name__)
 application.config['SECRET_KEY'] = 'Hard to guess string'
@@ -40,6 +41,19 @@ def index():
     return render_template('index.html', name=name, form=form, salute='Hello world!', date1=formatted_now)
 
 
+async def transtoeng(source):
+    result = []
+    await result.append(source, asyncio.create_task(ts.google(source)))
+    return result
+
+
+def transall(alltext):
+    allresult = []
+    for i in alltext:
+        allresult.append(transtoeng(i))
+    return allresult
+
+
 @application.route('/anekdots')
 def home(who=' Anekdots'):
     # return render_template('anekdots.html', name=who,  salute='Hello world!')
@@ -51,7 +65,6 @@ def home(who=' Anekdots'):
     alltext = []
     #translated = []
     totranslate = ''
-    f = True
     counter = 3
     for tag in tags:
         text = []
@@ -63,13 +76,12 @@ def home(who=' Anekdots'):
                 text.append(a)
                 totranslate = totranslate + a + ' '
         if len(text) > 0:
-            alltext.append([text, ts.google(totranslate)])
-            # translated.append(ts.google(totranslate))
-            totranslate = ''
+            alltext.append(text)
             if counter <= 0:
                 break
             counter -= 1
-    return render_template('home.html', alltext=alltext)
+    result = asyncio.run(transall(alltext))
+    return render_template('home.html', alltext=result)
 
 
 @application.route('/weather')
