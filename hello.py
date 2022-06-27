@@ -1,4 +1,5 @@
 from ensurepip import bootstrap
+from fnmatch import translate
 from flask import request
 from flask import Flask, render_template
 from datetime import datetime
@@ -18,6 +19,7 @@ import glob
 import requests
 import os.path
 from PIL import Image
+import translators as ts
 
 application = Flask(__name__)
 application.config['SECRET_KEY'] = 'Hard to guess string'
@@ -40,24 +42,36 @@ def index():
 
 @application.route('/anekdots')
 def home(who=' Anekdots'):
-    #return render_template('anekdots.html', name=who,  salute='Hello world!')
+    # return render_template('anekdots.html', name=who,  salute='Hello world!')
     url = 'https://www.anekdot.ru/random/anekdot/'
-    html = urlopen(url, context=ssl.create_default_context(cafile=certifi.where()))
+    html = urlopen(url, context=ssl.create_default_context(
+        cafile=certifi.where()))
     soup = BeautifulSoup(html, "html.parser")
     tags = soup('div')
-    text = []
+    alltext = []
+    #translated = []
+    totranslate = ''
     f = True
+    counter = 3
     for tag in tags:
+        text = []
         if tag.attrs == {'class': ['text']}:
             l = tag.contents
             for a in l:
                 if str(a).startswith('<br'):
                     continue
                 text.append(a)
-            if text[:-1] != '*next':
-                text.append('*next')
-    return  render_template('home.html', text=text)
-    
+                totranslate = totranslate + a + ' '
+        if len(text) > 0:
+            alltext.append([text, ts.google(totranslate)])
+            # translated.append(ts.google(totranslate))
+            totranslate = ''
+            if counter <= 0:
+                break
+            counter -= 1
+    return render_template('home.html', alltext=alltext)
+
+
 @application.route('/weather')
 def weather():
     #code = requests.get('http://dataservice.accuweather.com/locations/v1/cities/search?apikey=BIilFHGmyYwCasU6E1me1RBkj3MNdNfN&q=Dunedin')
@@ -134,7 +148,7 @@ def getpics(picsdir):
         files.append(os.path.normpath(f))
     createthumb(files)
     for i in files:
-        imgfiles.append( os.path.normpath(os.path.join('./static', i)))
+        imgfiles.append(os.path.normpath(os.path.join('./static', i)))
         print(imgfiles)
     return imgfiles
 

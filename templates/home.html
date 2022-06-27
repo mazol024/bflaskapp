@@ -8,19 +8,25 @@
 {% block content %}
 
 <div class="panel-primary ">
-    <div class="container bg-info text-info ">        
-                {% for tt in text %}
-               
-                    {% if tt.startswith('*next') %}
-                       <hr style="height:2px;border-width:0;color:gray;background-color:gray">
+    <div class="container bg-info text-info ">    
+        <table class="table">
+            <tbody>
+                {% for text in alltext %}
+                <tr>
+                    <td>
+                        {% for rows in text[0] %}
+                            {{rows}}
+                            <br/>
+                        {% endfor %}                                
                         <br/>
-                        
-                    {% else%}
-                        {{tt}}
-                        <br/>
-                    {% endif %}
-    
-                {% endfor %}
+                    </td>
+                    <td>
+                        {{text[1]}}
+                    </td>
+                </tr>
+                {% endfor %}                                
+            </tbody>
+        </table>
     </div>    
  </div>
     
