@@ -20,7 +20,7 @@ import requests
 import os.path
 from PIL import Image
 import translators as ts
-import asyncio
+import concurrent.futures
 
 application = Flask(__name__)
 application.config['SECRET_KEY'] = 'Hard to guess string'
@@ -41,17 +41,9 @@ def index():
     return render_template('index.html', name=name, form=form, salute='Hello world!', date1=formatted_now)
 
 
-async def transtoeng(source):
-    result = []
-    await result.append(source, asyncio.create_task(ts.google(source)))
+def transtoeng(source):
+    result = ts.google(source)
     return result
-
-
-def transall(alltext):
-    allresult = []
-    for i in alltext:
-        allresult.append(transtoeng(i))
-    return allresult
 
 
 @application.route('/anekdots')
@@ -63,11 +55,13 @@ def home(who=' Anekdots'):
     soup = BeautifulSoup(html, "html.parser")
     tags = soup('div')
     alltext = []
-    #translated = []
+    translated = []
     totranslate = ''
     counter = 3
+    resulteng = []
     for tag in tags:
         text = []
+        totranslate = ''
         if tag.attrs == {'class': ['text']}:
             l = tag.contents
             for a in l:
@@ -76,12 +70,16 @@ def home(who=' Anekdots'):
                 text.append(a)
                 totranslate = totranslate + a + ' '
         if len(text) > 0:
-            alltext.append(text)
+            alltext.append([text, totranslate])
             if counter <= 0:
                 break
             counter -= 1
-    result = asyncio.run(transall(alltext))
-    return render_template('home.html', alltext=result)
+    with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
+        for i in range(0, 4):
+            resulteng.append(executor.submit(transtoeng, alltext[i][1]))
+    for i in range(0, 4):
+        translated.append([alltext[i][0], resulteng[i].result()])
+    return render_template('home.html', alltext=translated)
 
 
 @application.route('/weather')
