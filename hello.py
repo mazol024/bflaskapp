@@ -1,5 +1,6 @@
 from ensurepip import bootstrap
 from fnmatch import translate
+from pathlib import Path
 from flask import request
 from flask import Flask, render_template
 from datetime import datetime
@@ -21,6 +22,7 @@ import os.path
 from PIL import Image
 import translators as ts
 import concurrent.futures
+from pathlib import Path
 
 application = Flask(__name__)
 application.config['SECRET_KEY'] = 'Hard to guess string'
@@ -154,12 +156,13 @@ def getpics(picsdir):
     files = []
     imgfiles = []
     for f in glob.glob(picsdir):
-        #files.append('/' + f)
+        # for f in sorted(Path(picsdir).iterdir(), key=os.path.getmtime):
         files.append(os.path.normpath(f))
     createthumb(files)
     for i in files:
         imgfiles.append(os.path.normpath(os.path.join('./static', i)))
         print(imgfiles)
+    imgfiles.sort(key=os.path.getmtime, reverse=True)
     return imgfiles
 
 
