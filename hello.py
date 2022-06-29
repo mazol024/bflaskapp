@@ -124,7 +124,7 @@ def photofull(imagepath):
 def budapest(descript='Photos from Budapest'):
     photos = []
     photos = getpics('./static/budapest/*.jpg')
-
+    photos.extend(getpics('./static/*.png'))
     return render_template('projects.html', name=descript, photos=photos)
 
 
@@ -132,7 +132,7 @@ def budapest(descript='Photos from Budapest'):
 def spain(descript='Photos from Spain '):
     photos = []
     photos = getpics('./static/spain/*.jpg')
-
+    photos.extend(getpics('./static/*.png'))
     return render_template('projects.html', name=descript, photos=photos)
 
 
@@ -140,7 +140,7 @@ def spain(descript='Photos from Spain '):
 def paris(descript='Photos from Paris'):
     photos = []
     photos = getpics('./static/paris/*.jpg')
-
+    photos.extend(getpics('./static/*.png'))
     return render_template('projects.html', name=descript, photos=photos)
 
 
@@ -148,7 +148,7 @@ def paris(descript='Photos from Paris'):
 def lolpics(descript='Funny pictures from fishki.net'):
     photos = []
     photos = getpics('./static/*.jpg')
-
+    photos.extend(getpics('./static/*.png'))
     return render_template('projects.html', name=descript, photos=photos)
 
 
@@ -175,7 +175,10 @@ def createthumb(ofiles):
         else:
             img = Image.open(f)
             img = img.resize((180, 180), Image.ANTIALIAS)
-            img.save(os.path.join('./static', f), 'JPEG', quality=90)
+            if f[f.lower().rfind('jpg')+1:].lower() == 'jpg':
+                img.save(os.path.join('./static', f), 'JPEG', quality=90)
+            else:
+                img.save(os.path.join('./static', f), 'PNG', quality=90)
 
 
 if __name__ == "__main__":
