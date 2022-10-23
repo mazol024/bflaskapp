@@ -44,7 +44,7 @@ def index():
 
 
 def transtoeng(source):
-    result = ts.google(source)
+    result = ts.google(source, from_language='ru', to_language='en')
     return result
 
 
