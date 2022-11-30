@@ -1,0 +1,20 @@
+
+{% extends "bootstrap/base.html" %}
+{% block title %}OlegMazhanov{% endblock %}
+{% include  "menu.html" %}
+
+{% block content %}
+   <div class="panel-primary ">
+        <div class="container bg-info text-info ">
+            <h1> {{title}}</h1>
+            
+            <hr>
+                {% for chap in chapters %}
+                  <ul>
+                        <li><a href={{chap[1]}} >{{chap[0]}}</a></li>
+                </ul>
+                {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
