@@ -24,6 +24,17 @@ import translators as ts
 import concurrent.futures
 from pathlib import Path
 
+from ast import walk
+import os
+import shutil
+from pickletools import unicodestring1
+import ebooklib
+import codecs
+from ebooklib import epub
+from html.parser import HTMLParser
+from zipfile import ZipFile
+
+
 application = Flask(__name__)
 application.config['SECRET_KEY'] = 'Hard to guess string'
 bootstrap = Bootstrap(application)
@@ -116,12 +127,12 @@ def games(who=' Project'):
 def photofull(imagepath):
     p1 = imagepath[imagepath.rfind('/static'):]
     #p1 = os.path.normpath(os.path.join('./', imagepath))
-    print("Full picture: " + p1)
+    #print("Full picture: " + p1)
     return render_template('photofull.html', pic1=p1)
 
 
 @application.route('/budapest')
-def budapest(descript='Photos from Budapest'):
+def budapest(descript='Budapest 2012'):
     photos = []
     photos = getpics('./static/budapest/*.jpg')
 
@@ -129,7 +140,7 @@ def budapest(descript='Photos from Budapest'):
 
 
 @application.route('/spain')
-def spain(descript='Photos from Spain '):
+def spain(descript='Spain 2012-2013'):
     photos = []
     photos = getpics('./static/spain/*.jpg')
 
@@ -137,19 +148,84 @@ def spain(descript='Photos from Spain '):
 
 
 @application.route('/paris')
-def paris(descript='Photos from Paris'):
+def paris(descript='Paris 2015'):
     photos = []
     photos = getpics('./static/paris/*.jpg')
-
     return render_template('projects.html', name=descript, photos=photos)
 
 
 @application.route('/lolpictures')
-def lolpics(descript='Funny pictures from fishki.net'):
+def lolpics(descript='Some funny pictures...'):
     photos = []
     photos = getpics('./static/*.jpg')
     photos.extend(getpics('./static/*.png'))
     return render_template('projects.html', name=descript, photos=photos)
+
+@application.route('/books')
+def books():
+    set_books()
+    listdirs = os.scandir('templates/ebooks/')
+    flist = []
+    efiles = []
+    for i in listdirs:
+        if i.is_dir():
+            efiles = os.scandir(i)
+            for b in efiles:
+                if b.is_file():
+                    flist.append([b.name[:-4].replace('_'," "),os.path.basename(i)])
+    return render_template('books.html', books=flist)
+
+
+@application.route('/<path:i>')
+def toc(i):
+    bookdir = 'templates/ebooks/' + str(i) + '/'
+    ff = os.scandir(bookdir)
+    for i in ff:
+        if i.is_file():
+            zipfilename = bookdir + i.name
+    with ZipFile(zipfilename, 'r') as zip:
+        soup = BeautifulSoup(
+            zip.read('META-INF/container.xml'), features='xml')
+        opf = dict(soup.find('rootfile').attrs)['full-path']
+
+        basedir = os.path.dirname(opf)
+        if basedir:
+            basedir = '{0}/'.format(basedir)
+
+        c = zip.read(opf)
+        soup = BeautifulSoup(c, features='xml')
+        title =  soup.find('dc:title').text
+        x, ncx = {}, None
+        for item in soup.find('manifest').findAll('item'):
+            d = dict(item.attrs)
+            x[d['id']] = '{0}{1}'.format(basedir, d['href'])
+            if len(x) <= 5:
+                print(x, '\n')
+            if d['media-type'] == 'application/x-dtbncx+xml':
+                ncx = '{0}{1}'.format(basedir, d['href'])
+            elif d['id'] == 'ncxtoc':
+                ncx = '{0}{1}'.format(basedir, d['href'])
+        z = {}
+        pp = []
+        if ncx:
+            # get titles from the toc
+            #n = zip.read('OEBPS/html/toc.ncx')
+            n = zip.read(ncx)
+            soup = BeautifulSoup(n, 'lxml')
+            for navpoint in soup('navpoint'):
+                k = navpoint.content.get('src', None)
+                # strip off any anchor text
+                # k = root + basedir + k.split('#')[0]
+                if k:
+                    k = bookdir +'book/' + basedir+ k
+                    z[k] = navpoint.navlabel.text
+                    pp.append([z[k], k])
+            if len(pp) <= 1:
+                for li in soup.find('ol').findAll('li'):
+                    k= bookdir + 'book/' + basedir + li.find('a')['href']
+                    pp.append([li.text,k])
+    
+    return render_template('contents.html', chapters = pp, title = title)
 
 
 def getpics(picsdir):
@@ -180,5 +256,28 @@ def createthumb(ofiles):
                 img.save(os.path.join('./static', f), 'PNG')
 
 
+
+def set_books(basedir='templates/ebooks/'):
+    # check dir if new book here and unpack it
+    listdirs = os.scandir(basedir)
+    numlist = [0]
+    flist = []
+    for i in listdirs:
+        if i.is_dir():
+            numlist.append(int(os.path.basename(i)))
+        if i.is_file():
+            flist.append(i)
+    maxnum = max(numlist)
+    for f in flist:
+        maxnum += 1
+        os.makedirs(basedir+str(maxnum)+'/')
+        os.rename(f, basedir+str(maxnum)+'/'+f.name)
+        #shutil.move(f, basedir+str(maxnum)+'/')
+        ff = os.scandir(basedir+str(maxnum)+'/')
+        for i in ff:
+            if i.is_file():
+                with ZipFile(i, 'r') as zip:
+                    zip.extractall(basedir+str(maxnum)+'/book/')
+    
 if __name__ == "__main__":
     application.run(host='0.0.0.0')
